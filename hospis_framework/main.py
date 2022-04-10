@@ -3,7 +3,7 @@ import quopri
 
 class PageNotFound404:
     def __call__(self, request):
-        return '404', '404 PAGE Not Found'
+        return '404 WHAT', '404 PAGE Not Found'
 
 
 class Framework:
