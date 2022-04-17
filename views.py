@@ -39,3 +39,23 @@ class Aprove_appointment:
 class Decline_appointment:
     def __call__(self, request):
         return '200 OK', 'Decline chosen time'
+
+
+class AppointmentList:
+    def __call__(self, request):
+        return '200 OK', render('appointment_list.html')
+
+
+class Category:
+    def __call__(self, request):
+        return '200 OK', render('category_list.html')
+
+
+class CreateAppointment:
+    def __call__(self, request):
+        return '200 OK', render('category.html')
+
+
+class CreateCategory:
+    def __call__(self, request):
+        return '200 OK', render('category.html')

@@ -1,5 +1,6 @@
 from datetime import date
-from views import Index, About, Registration, Auth, Appointment, Aprove_appointment, Decline_appointment
+from views import Index, About, Registration, Auth, Appointment, Aprove_appointment, Decline_appointment, \
+    AppointmentList, Category
 
 
 # front controller
@@ -21,4 +22,6 @@ routes = {
     '/appointment/': Appointment(),
     '/apr_appointment/': Aprove_appointment(),
     '/dec_appointment/': Decline_appointment(),
+    '/appointment-list/': AppointmentList(),
+    '/category-list/': Category()
 }
