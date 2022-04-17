@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-Категории специалистов
+Список категорий приема
 {% endblock %}
 {% block style %}
 	{% include "inc-style.html" %}
@@ -11,18 +11,18 @@
 {% block body %}
     <a href="/">назад</a>
 
-    <h1>Специалисты</h1>
+    <h1>Список категорий приема</h1>
     <ul>
 
         {% for item in objects_list %}
         <li>
-            {{item.specialist_category}} <span>Количество специалистов: {{item.specialist_count()}}</span>
+            {{item.name}} <span>Количество записей: {{item.appointment_count()}}</span>
         </li>
         {% endfor %}
     </ul>
 
 	<div>
 		<li><a href="/appointment-list/">Список записей</a></li>
-		<li><a href="/create-category/?id={{id}}">Создать новую категорию</a></li>
+		<li><a href="/create-appointment/">Создать запись</a></li>
 	</div>
 {% endblock %}

@@ -1,11 +1,11 @@
 from datetime import date
 from views import Index, About, Registration, Auth, Appointment, Aprove_appointment, Decline_appointment, \
-    AppointmentList, Category
+    CopyAppointment, CategoryList, CreateCategory, CreateAppointment, AppointmentList, CurrentAppointment
 
 
 # front controller
 def hidden_front(request):
-    request['data'] = date.today()
+    request['date'] = date.today()
 
 
 def key_front(request):
@@ -23,5 +23,9 @@ routes = {
     '/apr_appointment/': Aprove_appointment(),
     '/dec_appointment/': Decline_appointment(),
     '/appointment-list/': AppointmentList(),
-    '/category-list/': Category()
+    '/create-appointment/': CreateAppointment(),
+    '/create-category/': CreateCategory(),
+    '/category-list/': CategoryList(),
+    '/copy-appointment/': CopyAppointment(),
+    '/appointment_time/': CurrentAppointment(),
 }

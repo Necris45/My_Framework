@@ -7,12 +7,12 @@ class User:
     pass
 
 
-# преподаватель
+# Специалист
 class Specialist(User):
     pass
 
 
-# студент
+# Пациент
 class Patient(User):
     pass
 
@@ -30,7 +30,7 @@ class UserFactory:
         return cls.types[type_]()
 
 
-# порождающий паттерн Прототип - прием (у специалиста)
+# порождающий паттерн Прототип - Курс
 class AppointmentPrototype:
     # прототип курсов обучения
 
@@ -39,60 +39,53 @@ class AppointmentPrototype:
 
 
 class Appointment(AppointmentPrototype):
-    def __init__(self, specialist_category, specialist_name, date, time, duration):
-        self.specialist_category = specialist_category
-        self.specialist_name = specialist_name
-        self.appointment_date = date
-        self.appointment_time = time
-        self.appointment_duration = duration
-        self.specialist_category.appointment.append(self)
+
+    def __init__(self, name, category):
+        self.name = name
+        self.category = category
+        self.category.appointments.append(self)
 
 
-# прием у терапевта
-class TerapevtAppointment(Appointment):
+# Первичный прием
+class FirstAppointment(Appointment):
     pass
 
 
-# прием у невролога
-class NeurologAppointment(Appointment):
+# Повторный прием
+class RepitAppointment(Appointment):
     pass
 
 
-# прием у хирурга
-class ChirurgAppointment(Appointment):
-    pass
-
-
-# Категория специалиста (специализация)
-class SpecialistCategory:
+# Категория
+class Category:
     # реестр?
     auto_id = 0
 
-    def __init__(self, specialist_category):
-        self.id = SpecialistCategory.auto_id
-        SpecialistCategory.auto_id += 1
-        self.specialist_category = specialist_category
-        self.specialists_lst = []
+    def __init__(self, name, category):
+        self.id = Category.auto_id
+        Category.auto_id += 1
+        self.name = name
+        self.category = category
+        self.appointments = []
 
-    def specialist_count(self):
-        result = len(self.specialists_lst)
-        if self.specialist_category:
-            result += self.specialist_category.course_count()
+    def appointment_count(self):
+        result = len(self.appointments)
+        if self.category:
+            result += self.category.appointment_count()
         return result
 
 
-# порождающий паттерн Абстрактная фабрика - фабрика записи к специалисту
+# порождающий паттерн Абстрактная фабрика - фабрика записей
 class AppointmentFactory:
     types = {
-        'terapevt': TerapevtAppointment,
-        'neurolog': NeurologAppointment,
-        'chirurg': ChirurgAppointment
+        'first': FirstAppointment,
+        'repit': RepitAppointment
     }
 
     # порождающий паттерн Фабричный метод
     @classmethod
-    def create(cls, type_, specialist_category, specialist_name, date, time, duration):
-        return cls.types[type_](specialist_category, specialist_name, date, time, duration)
+    def create(cls, type_, specialist, category):
+        return cls.types[type_](specialist, category)
 
 
 # Основной интерфейс проекта
@@ -101,31 +94,30 @@ class Engine:
         self.specialists = []
         self.patients = []
         self.appointments = []
-        self.specialist_categories = []
+        self.categories = []
 
     @staticmethod
     def create_user(type_):
         return UserFactory.create(type_)
 
     @staticmethod
-    def create_category(specialist_category):
-        return SpecialistCategory(specialist_category)
+    def create_category(name, category=None):
+        return Category(name, category)
 
-    def find_category_by_id(self, category_id):
-        for item in self.specialist_categories:
+    def find_category_by_id(self, id):
+        for item in self.categories:
             print('item', item.id)
-            if item.id == category_id:
+            if item.id == id:
                 return item
         raise Exception(f'Нет категории с id = {id}')
 
     @staticmethod
-    def create_appointment(type_, specialist_category, specialist_name, date, time, duration):
-        return AppointmentFactory.create(type_, specialist_category, specialist_name, date, time, duration)
+    def create_appointment(type_, name, category):
+        return AppointmentFactory.create(type_, name, category)
 
-    def get_appointment(self, specialist_category, specialist_name, date, time):
+    def get_appointment(self, name):
         for item in self.appointments:
-            if item.specialist_category == specialist_category and item.specialist_name == specialist_name and \
-                    item.date == date and item.time == time:
+            if item.name == name:
                 return item
         return None
 
