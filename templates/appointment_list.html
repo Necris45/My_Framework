@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-Список категорий
+Список записей
 {% endblock %}
 {% block style %}
 	{% include "inc-style.html" %}
@@ -17,12 +17,12 @@
     <br>
 
     <div>
-        <a href="/create-appointment/">Создать новую запись на прием</a>
+        <a href="/create-appointment/?id={{id}}">Создать новую запись</a>
         <br>
-        <h1>Список записей "{{specialist_category}}"</h1>
+        <h1>Список записей для категории "{{name}}"</h1>
         {% for item in objects_list %}
         <li>
-            {{item.specialist_category}} <span><a href="/copy-course/?name={{item.name}}">скопировать</a></span>
+            {{item.name}} <span><a href="/copy-appointment/?name={{item.name}}">скопировать</a></span>
         </li>
         {% endfor %}
     </div>
