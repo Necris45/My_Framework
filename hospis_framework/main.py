@@ -54,6 +54,7 @@ class Framework:
         start_response(code, [('Content-Type', 'text/html')])
         return [body.encode('utf-8')]
 
+
     @staticmethod
     def decode_value(data):
         new_data = {}

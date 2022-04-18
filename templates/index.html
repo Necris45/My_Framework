@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-	Наши специалисты
+Главная страница
 {% endblock %}
 {% block style %}
 	{% include "inc-style.html" %}
@@ -9,5 +9,16 @@
 	{% include "inc-menu.html" %}
 {% endblock %}
 {% block body %}
-	{% include "inc-index-body.html" %}
+	<div>
+		<a href="/create-category/">Создать новую категорию</a>
+	</div>
+	<div>
+		<h1>Список существующих категорий</h1>
+        {% for item in objects_list %}
+        <li>
+            {{item.name}} <span>Количество записей: {{item.appointment_count()}}</span>
+			<a href="/appointment-list/?id={{item.id}}">Показать записи</a>
+        </li>
+        {% endfor %}
+	</div>
 {% endblock %}
