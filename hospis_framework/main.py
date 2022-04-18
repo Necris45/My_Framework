@@ -1,4 +1,5 @@
 import quopri
+from my_requests import GetRequests, PostRequests
 
 
 class PageNotFound404:
@@ -22,13 +23,27 @@ class Framework:
         if not path.endswith('/'):
             path = f'{path}/'
 
+        request = {}
+        method = env['REQUEST_METHOD']
+        request['method'] = method
+
+        if method == 'POST':
+            data = PostRequests().get_request_params(env)
+            request['data'] = data
+            print(f'Нам пришёл post-запрос: {Framework.decode_value(data)}')
+        if method == 'GET':
+            request_params = GetRequests().get_request_params(env)
+            request['request_params'] = request_params
+            print(f'Нам пришли GET-параметры: {request_params}')
+        print(request)  # {'method': 'GET', 'request_params': {'id': '1', 'category': '10'}}
+
         # находим нужный контроллер
         # отработка паттерна page controller
         if path in self.my_routs_lst:
             view = self.my_routs_lst[path]
         else:
             view = PageNotFound404()
-        request = {}
+
         # наполняем словарь request элементами
         # этот словарь получат все контроллеры
         # отработка паттерна front controller
