@@ -1,0 +1,45 @@
+<div class="content">
+    <h1>Наши специалисты</h1>
+    <p>Время приема: {{data}} <b>(дата подставляется шаблоном)</b></p>
+    <table>
+        <tr class="head">
+            <th></th>
+            <th>Терапевт</th>
+            <th>Хирург</th>
+            <th>Окулист</th>
+        </tr>
+        <tr>
+            <th>Клиника на Краснодонской</th>
+            <td>Пн, 21 апреля 2022<br />08:00 - 13:00</td>
+            <td>Пн, 21 апреля 2022<br />13:00 - 18:00</td>
+            <td>Пн, 21 апреля 2022<br />08:00 - 13:00</td>
+        </tr>
+        <tr>
+            <th>Клиника на Ленина</th>
+            <td>Пн, 21 апреля 2022<br />13:00 - 18:00</td>
+            <td>Пн, 21 апреля 2022<br />08:00 - 13:00</td>
+            <td>Пн, 21 апреля 2022<br />13:00 - 18:00</td>
+        </tr>
+    </table>
+    <form action="" method="post">
+        <fieldset>
+            <legend><br />Зарегистрируйтесь</legend>
+            <p><label class="title" for="name">Ваше имя:</label>
+                <input type="text" name="name" id="name"><br />
+                <label class="title" for="email">Ваш email:</label>
+                <input type="text" name="email" id="email"><br />
+                <label class="title" for="phone_number">Ваш телефон:</label>
+                <input type="text" name="phone_number" id="phone_number"></p>
+            <p><label for="location" class="title">Ближайшая клиника:</label>
+                <select name="location" id="location">
+                    <option value="Lenina">Клиника на Ленина</option>
+                    <option value="Krasodonskaya">Клиника на Краснодонской</option>
+                </select></p>
+            <span class="title">Какого специалиста желаете посетить?</span>
+            <p><label><input type="checkbox" name="terapevt" /> Терапевт</label>
+            <label><input type="checkbox" name="hirurg" /> Хирург</label>
+            <label><input type="checkbox" name="okulist" /> Окулист</label></p>
+        </fieldset>
+    <div class="submit"><input type="submit" value="Регистрация" /></div>
+    </form>
+</div>
