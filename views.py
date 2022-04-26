@@ -1,14 +1,17 @@
 from datetime import date
 
 from hospis_framework.templator import render
-from patterns.creational_patterns import Engine, Logger
+from patterns.creational_patterns import Engine, Logger, MapperRegistry
 from patterns.structural_patterns import AppRoute, Debug
 from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, TemplateView, ListView, CreateView, BaseSerializer
+from architectural_system_pattern_unit_of_work import UnitOfWork
 
 site = Engine()
 logger = Logger('main')
 email_notifier = EmailNotifier()
 sms_notifier = SmsNotifier()
+UnitOfWork.new_current()
+UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 
 routes = {}
 
@@ -101,19 +104,18 @@ class CreateAppointment:
                 category = site.find_category_by_id(int(self.category_id))
 
                 appointment = site.create_appointment('first', name, category)
+                # Добавляем наблюдателей на курс
+                appointment.observers.append(email_notifier)
+                appointment.observers.append(sms_notifier)
                 site.appointments.append(appointment)
 
             return '200 OK', render('appointment_list.html', objects_list=category.appointments,
                                     name=category.name, id=category.id)
 
         else:
-            try:
-                self.category_id = int(request['request_params']['id'])
-                category = site.find_category_by_id(int(self.category_id))
-
-                return '200 OK', render('create_appointment.html', name=category.name, id=category.id)
-            except KeyError:
-                return '200 OK', 'No categories have been added yet'
+            self.category_id = int(request['request_params']['id'])
+            category = site.find_category_by_id(int(self.category_id))
+            return '200 OK', render('create_appointment.html', name=category.name, id=category.id)
 
 
 # контроллер - создать категорию
@@ -184,9 +186,12 @@ class CurrentAppointment:
 
 
 @AppRoute(routes=routes, url='/patient-list/')
-class StudentListView(ListView):
-    queryset = site.patients
+class PatientListView(ListView):
     template_name = 'patient_list.html'
+
+    def get_queryset(self):
+        mapper = MapperRegistry.get_current_mapper('patient')
+        return mapper.all()
 
 
 @AppRoute(routes=routes, url='/create-patient/')
@@ -198,6 +203,8 @@ class PatientCreateView(CreateView):
         name = site.decode_value(name)
         new_obj = site.create_user('patient', name)
         site.patients.append(new_obj)
+        new_obj.mark_new()
+        UnitOfWork.get_current().commit()
 
 
 @AppRoute(routes=routes, url='/add-patient/')
