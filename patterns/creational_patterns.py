@@ -1,10 +1,11 @@
 import copy
 import quopri
-
+from behavioral_patterns import ConsoleWriter, Subject
 
 # абстрактный пользователь
 class User:
-    pass
+    def __init__(self, name):
+        self.name = name
 
 
 # Специалист
@@ -14,7 +15,9 @@ class Specialist(User):
 
 # Пациент
 class Patient(User):
-    pass
+    def __init__(self, name):
+        self.appointments = []
+        super().__init__(name)
 
 
 # порождающий паттерн Абстрактная фабрика - фабрика пользователей
@@ -26,24 +29,34 @@ class UserFactory:
 
     # порождающий паттерн Фабричный метод
     @classmethod
-    def create(cls, type_):
-        return cls.types[type_]()
+    def create(cls, type_, name):
+        return cls.types[type_](name)
 
 
-# порождающий паттерн Прототип - Курс
+# порождающий паттерн Прототип - запись
 class AppointmentPrototype:
-    # прототип курсов обучения
+    # прототип записи к специалистам
 
     def clone(self):
         return copy.deepcopy(self)
 
 
-class Appointment(AppointmentPrototype):
+class Appointment(AppointmentPrototype, Subject):
 
     def __init__(self, name, category):
         self.name = name
         self.category = category
         self.category.appointments.append(self)
+        self.patients = []
+        super().__init__()
+
+    def __getitem__(self, item):
+        return self.patients[item]
+
+    def add_patient(self, patient: Patient):
+        self.patients.append(patient)
+        patient.appointments.append(self)
+        self.notify()
 
 
 # Первичный прием
@@ -97,8 +110,8 @@ class Engine:
         self.categories = []
 
     @staticmethod
-    def create_user(type_):
-        return UserFactory.create(type_)
+    def create_user(type_, name):
+        return UserFactory.create(type_, name)
 
     @staticmethod
     def create_category(name, category=None):
@@ -120,6 +133,11 @@ class Engine:
             if item.name == name:
                 return item
         return None
+
+    def get_patient(self, name) -> Patient:
+        for item in self.patients:
+            if item.name == name:
+                return item
 
     @staticmethod
     def decode_value(val):
@@ -150,9 +168,10 @@ class SingletonByName(type):
 
 class Logger(metaclass=SingletonByName):
 
-    def __init__(self, name):
+    def __init__(self, name, writer=ConsoleWriter()):
         self.name = name
+        self.writer = writer
 
-    @staticmethod
-    def log(text):
-        print('log--->', text)
+    def log(self, text):
+        text = f'log---> {text}'
+        self.writer.write(text)

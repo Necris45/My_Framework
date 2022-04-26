@@ -3,9 +3,12 @@ from datetime import date
 from hospis_framework.templator import render
 from patterns.creational_patterns import Engine, Logger
 from patterns.structural_patterns import AppRoute, Debug
+from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, TemplateView, ListView, CreateView, BaseSerializer
 
 site = Engine()
 logger = Logger('main')
+email_notifier = EmailNotifier()
+sms_notifier = SmsNotifier()
 
 routes = {}
 
@@ -178,3 +181,47 @@ class CurrentAppointment:
     @Debug(name='CurrentAppointment')
     def __call__(self, request):
         return '200 OK', render('appointment_date_time.html', data=date.today())
+
+
+@AppRoute(routes=routes, url='/patient-list/')
+class StudentListView(ListView):
+    queryset = site.patients
+    template_name = 'patient_list.html'
+
+
+@AppRoute(routes=routes, url='/create-patient/')
+class PatientCreateView(CreateView):
+    template_name = 'create_patient.html'
+
+    def create_obj(self, data: dict):
+        name = data['name']
+        name = site.decode_value(name)
+        new_obj = site.create_user('patient', name)
+        site.patients.append(new_obj)
+
+
+@AppRoute(routes=routes, url='/add-patient/')
+class AddPatientByAppointmentCreateView(CreateView):
+    template_name = 'add_patient.html'
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['appointments'] = site.appointments
+        context['patients'] = site.patients
+        return context
+
+    def create_obj(self, data: dict):
+        appointment_name = data['appointment_name']
+        appointment_name = site.decode_value(appointment_name)
+        appointment = site.get_appointment(appointment_name)
+        patient_name = data['patient_name']
+        patient_name = site.decode_value(patient_name)
+        patient = site.get_patient(patient_name)
+        appointment.add_patient(patient)
+
+
+@AppRoute(routes=routes, url='/api/')
+class AppointmentApi:
+    @Debug(name='AppointmentApi')
+    def __call__(self, request):
+        return '200 OK', BaseSerializer(site.appointments).save()
